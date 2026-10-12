@@ -39,6 +39,8 @@ The entire game happens in one living room. All service stations, collectibles, 
 
 **OpenAI Codex:** concept exploration, gameplay code, procedural Canvas artwork, UI styling, Web Audio sound effects, tests, iteration, documentation, and HTML5 packaging.
 
+**OpenAI image generation:** promotional banner, page background, and browser-player background, directed to match the game's palette, robot character, and leaving-party story. These are promotional illustrations, not gameplay screenshots.
+
 **Human direction:** SouBeatrizKaroline selected the concept and directed the English presentation, repository, fullscreen behavior, and publication. The game was developed iteratively, with rule tests and browser checks.
 
 Art is drawn in code with a unified palette; sounds are synthesized in the browser. No runtime AI API is used.

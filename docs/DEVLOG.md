@@ -33,4 +33,4 @@ Upload the packaged ZIP to itch.io and play the actual embedded build once. Veri
 
 ## AI disclosure
 
-OpenAI Codex assisted throughout concept development, implementation, visual work in code, tests, documentation, and packaging. SouBeatrizKaroline provided the creative selection and project direction. No AI-generated raster art, external music, voice cloning, or live AI API is included.
+OpenAI Codex assisted throughout concept development, implementation, visual work in code, tests, documentation, and packaging. SouBeatrizKaroline provided the creative selection and project direction. The game itself uses procedural art and synthesized sound, without generated raster art or live AI APIs. OpenAI image generation was subsequently used for three promotional itch.io page illustrations; their final prompts are saved in itch-assets/IMAGE_PROMPTS.json.

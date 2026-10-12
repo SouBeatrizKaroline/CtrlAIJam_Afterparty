@@ -114,7 +114,9 @@ npm run build # Produce build/Afterparty-HTML5.zip
 
 **Human direction — SouBeatrizKaroline:** selected the Afterparty concept and directed the English-language presentation, repository naming, fullscreen experience, and publication. The project was developed iteratively with gameplay checks and visual review; it is not a single unreviewed prompt export.
 
-All room art is drawn directly in Canvas using geometric shapes and a consistent palette. Sound effects are synthesized through the Web Audio API. No generated raster assets, stock asset packs, copyrighted characters, external music, or runtime AI services are used.
+All in-game room art is drawn directly in Canvas using geometric shapes and a consistent palette. Sound effects are synthesized through the Web Audio API. No generated raster assets or runtime AI services are used inside the game.
+
+**OpenAI image generation** created the promotional itch.io banner, page background, and browser-player background. These illustrations are page artwork, not gameplay screenshots. Download them from [the itch.io artwork folder](docs/itch-assets), which also includes the final prompts and page colors.
 
 ## 🧪 Validation
 
