@@ -39,8 +39,8 @@ function initAudio(){try {audio??=new(window.AudioContext||window.webkitAudioCon
 function toast(text){$('toast').textContent=text;$('toast').classList.add('visible');state.toast=3;}
 function burst(x,y,color,n=8){for(let i=0;i<n;i++)particles.push({x,y,vx:(Math.random()-.5)*95,vy:(Math.random()-.5)*95,life:.5,color});}
 function show(html,newMode){mode=newMode;keys.clear();$('panel').innerHTML=html;$('overlay').classList.remove('hidden');$('prompt').textContent='';$('pause').textContent='Pause';}
-function resume(){mode='play';$('overlay').classList.add('hidden');keys.clear();canvas.focus();}
-function start(){state=freshState();particles=[];quietTouch=false;$('quiet-touch').textContent='Quiet: off';initAudio();resume();toast('Morning shift online. Hold SPACE to vacuum leftovers.');}
+function resume(){mode='play';$('overlay').classList.add('hidden');keys.clear();canvas.focus({preventScroll:true});}
+function start(){state=freshState();particles=[];quietTouch=false;$('quiet-touch').textContent='Quiet: off';initAudio();resume();if(!document.fullscreenElement&&document.fullscreenEnabled&&$('game').requestFullscreen)$('game').requestFullscreen().catch(()=>toast('Use the fullscreen button on the itch.io player for a bigger view.'));toast('Morning shift online. Hold SPACE to vacuum leftovers.');}
 function title(){show(`<div class="eyebrow">ONE ROOM. ONE LAST KINDNESS.</div><h1>The party is over.<br>Your shift is not.</h1><p>You are MOP-01, a tiny cleaning robot with a big heart. Your human fell asleep after their leaving party. Make the room feel like home one last time.</p><div class="steps"><div><b>01 / Tidy up.</b> Hold SPACE to vacuum crumbs, cups, and paper.</div><div><b>02 / Make something of it.</b> Bring your bag to the dock, sort it, and buy upgrades.</div><div><b>03 / Leave a little love.</b> Find four keepsakes. Take them to the Lost & Found shelf.</div><div><b>Shhh.</b> Hold SHIFT for quiet cleaning near the sofa. Let go of SPACE to let the noise settle.</div></div><div class="buttons"><button class="primary" id="start">Clock in →</button></div><p class="hint">WASD / arrows to move · E to interact · 6 minutes until sunrise<br>Original HTML5 game · LEFTOVERS · Don't Wake It</p>`,'title');$('start').onclick=start;}
 function pause(){if(mode==='play'){show(`<div class="eyebrow">TAKE A BREATHER</div><h2>Even robots need a break.</h2><p>The clock and the room are paused. Clean all 72 leftovers, empty your bag, and return all four keepsakes to the shelf.</p><div class="buttons"><button class="primary" id="resume">Back to work</button><button id="restart">Start over</button></div>`,'pause');$('resume').onclick=resume;$('restart').onclick=start;}else if(mode==='pause')resume();}
 function nearestStory(){return stories.find((s,i)=>!state.found.includes(i)&&Math.hypot(state.x-s.x,state.y-s.y)<49);}
@@ -180,6 +180,7 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('keyup',e=>keys.delete(e.code));
 window.addEventListener('blur',()=>{keys.clear();if(mode==='play')pause();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&mode==='play')pause();});
+document.addEventListener('fullscreenchange',()=>{$('fullscreen').textContent=document.fullscreenElement?'Exit fullscreen':'Fullscreen';});
 $('pause').onclick=pause;
 $('sound').onclick=()=>{muted=!muted;$('sound').textContent=`Sound: ${muted?'off':'on'}`;if(!muted)initAudio();};
 $('fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('game').requestFullscreen();}catch{toast('Fullscreen is unavailable here. Enable it in the itch.io embed settings.');}};
