@@ -1,0 +1,19 @@
+const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs'),path=require('node:path');
+function game(){
+  const elements=new Map();const element=id=>{if(!elements.has(id))elements.set(id,{textContent:'',innerHTML:'',style:{},classList:{add(){},remove(){}},focus(){}});return elements.get(id);};
+  element('room').getContext=()=>({});
+  const sandbox={document:{getElementById:element,querySelectorAll:()=>[],addEventListener(){}},window:{addEventListener(){}},requestAnimationFrame(){},console,Math};
+  const context=vm.createContext(sandbox);vm.runInContext(fs.readFileSync(path.join(__dirname,'../game.js'),'utf8'),context);
+  return expression=>vm.runInContext(expression,context);
+}
+test('all 72 leftovers and four keepsakes are reachable on the floor',()=>{const run=game();assert.equal(run('state.trash.length'),72);assert.equal(run('state.trash.every(t=>!blocked(t.x,t.y,29))'),true);assert.equal(run('stories.every(s=>!blocked(s.x,s.y))'),true);
+  // Flood-fill robot-sized floor cells: rejects enclosed, unreachable pickups.
+  assert.equal(run(`(()=>{const seen=new Set(),queue=[[244,545]],step=8;while(queue.length){const [x,y]=queue.shift(),key=x+','+y;if(seen.has(key)||blocked(x,y))continue;seen.add(key);for(const [dx,dy] of [[step,0],[-step,0],[0,step],[0,-step]]){const nx=x+dx,ny=y+dy;if(!seen.has(nx+','+ny)&&!blocked(nx,ny))queue.push([nx,ny]);}}return [...state.trash,...stories].every(t=>[...seen].some(k=>{const [x,y]=k.split(',').map(Number);return Math.hypot(x-t.x,y-t.y)<25;}));})()`),true);});
+test('vacuum collects and stops at capacity',()=>{const run=game();run("mode='play';state.trash=Array.from({length:20},()=>({x:state.x,y:state.y,type:0}));keys.add('Space');update(.05)");assert.equal(run('state.bag.length'),12);assert.equal(run('state.cleaned'),12);assert.equal(run('state.trash.length'),8);});
+test('quiet mode reduces noise; releasing the vacuum restores sleep',()=>{const run=game();run("mode='play';state.noise=40;keys.add('Space');update(1)");const loud=run('state.noise');run("state.noise=40;keys.add('ShiftLeft');update(1)");assert.ok(run('state.noise')<loud);run('keys.clear();update(1)');assert.ok(run('state.noise')<40);});
+test('sorting rewards the correct bin and empties the bag',()=>{const run=game();run("state.bag=[{type:1}];mode='sort';sortItem(1)");assert.equal(run('state.scrap'),2);assert.equal(run('state.bag.length'),0);assert.equal(run('state.sorted'),1);});
+test('wrong sorting adds noise and can wake the host',()=>{const run=game();run("state.bag=[{type:1}];state.noise=95;mode='sort';sortItem(0)");assert.equal(run('mode'),'end');assert.equal(run('state.scrap'),1);});
+test('upgrades require scrap and affect the next shift action',()=>{const run=game();run("upgrade('radius',65,12)");assert.equal(run('state.radius'),43);run("state.scrap=20;upgrade('radius',65,12)");assert.equal(run('state.radius'),65);assert.equal(run('state.scrap'),8);});
+test('win requires all leftovers sorted and all keepsakes returned',()=>{const run=game();run('state.cleaned=72;state.found=[0,1,2,3]');assert.equal(run('checkWin()'),false);run('state.returned=[0,1,2,3];state.bag=[{type:0}]');assert.equal(run('checkWin()'),false);run('state.bag=[]');assert.equal(run('checkWin()'),true);assert.equal(run('mode'),'end');});
+test('sunrise and loud vacuum trigger loss; restart resets progress',()=>{const run=game();run("mode='play';state.time=.01;update(.05)");assert.equal(run('mode'),'end');run('start()');assert.equal(run('state.cleaned'),0);assert.equal(run('state.time'),360);run("state.noise=99.9;keys.add('Space');update(.05)");assert.equal(run('mode'),'end');});
+test('sorting, stories, pause and dock do not advance the clock through frame()',()=>{const run=game();for(const mode of ['sort','story','pause','dock']){run(`mode='${mode}';state.time=300;draw=()=>{};frame(100)`);assert.equal(run('state.time'),300);}});

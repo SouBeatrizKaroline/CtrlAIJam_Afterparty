@@ -1,0 +1,8 @@
+{
+  "name": "afterparty",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A tiny cleaning robot takes care of what a leaving party leaves behind.",
+  "scripts": {"start": "node tools/serve.cjs", "test": "node --test tests/game.test.cjs", "build": "node tools/build.cjs"},
+  "engines": {"node": ">=18"}
+}

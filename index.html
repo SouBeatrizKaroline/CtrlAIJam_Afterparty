@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171d30">
+  <title>AFTERPARTY — A tiny robot. A very big mess.</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="game">
+  <header><div class="brand"><span class="spark">✦</span><div>AFTERPARTY<small>THE MORNING AFTER STARTS WITH YOU.</small></div></div><div class="actions"><button id="sound" aria-label="Toggle sound">Sound: on</button><button id="pause">Pause</button><button id="fullscreen">Fullscreen</button></div></header>
+  <section class="dashboard" aria-label="Mission status">
+    <div><small>ROOM RESTORED</small><strong id="progress">0%</strong><span id="clean-count">0 / 72 leftovers</span></div>
+    <div class="sleep"><small>HOST'S SLEEP <span id="sleep-label">Deep sleep</span></small><div class="meter"><i id="noise"></i></div><span>Keep the noise down. Give them a good morning.</span></div>
+    <div><small>LOST & FOUND</small><strong id="found-count">0 / 4</strong><span id="bag-count">Bag 0 / 12 · Scrap 0</span></div>
+    <div><small>BEFORE SUNRISE</small><strong id="timer">6:00</strong><span id="mode-label">Ready for your shift</span></div>
+  </section>
+  <div class="stage"><canvas id="room" width="1040" height="650" tabindex="0" aria-label="Top-down party room. Use WASD or arrow keys to move, Space to vacuum, Shift for quiet mode, E to interact."></canvas>
+    <div id="toast" role="status" aria-live="polite"></div><div id="prompt"></div>
+    <section id="overlay" class="overlay"><div class="card" id="panel"></div></section>
+  </div>
+  <footer><span><kbd>WASD</kbd> / <kbd>↑↓←→</kbd> Move</span><span><kbd>SPACE</kbd> Vacuum</span><span><kbd>SHIFT</kbd> Quiet mode</span><span><kbd>E</kbd> Interact</span><span><kbd>ESC</kbd> Pause</span></footer>
+  <div id="touch" aria-label="Touch controls"><div class="dpad"><button data-key="ArrowUp" aria-label="Move up">↑</button><button data-key="ArrowLeft" aria-label="Move left">←</button><button data-key="ArrowDown" aria-label="Move down">↓</button><button data-key="ArrowRight" aria-label="Move right">→</button></div><div><button data-key="Space">Vacuum</button><button id="quiet-touch">Quiet: off</button><button id="interact-touch">Interact</button></div></div>
+</main>
+<script src="game.js"></script>
+</body></html>
