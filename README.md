@@ -25,7 +25,7 @@ You are **MOP-01**: a tiny cleaning robot with a big heart. Before sunrise, rest
 <details>
 <summary><b>A little piece of last night — in-game preview</b></summary>
 
-![One of the four keepsakes tells the story of the leaving party.](docs/gameplay.jpg)
+![The complete room and mission indicators in fullscreen, without scrolling.](docs/gameplay.jpg)
 
 </details>
 
@@ -101,7 +101,7 @@ npm run build # Produce build/Afterparty-HTML5.zip
 
 1. Create a game project and select **HTML** as the kind of project.
 2. Upload **`build/Afterparty-HTML5.zip`** and tick **“This file will be played in the browser.”**
-3. Start with an embed size of **1120 × 860**, and enable the fullscreen button. The layout adapts to smaller desktop embeds and fullscreen viewports.
+3. Select **Click to launch in fullscreen**. For an inline player, use **960 × 600** and enable its fullscreen button. The game occupies its entire viewport, with no page or menu scrolling; the complete room preserves its aspect ratio.
 4. Use [the prepared English description](docs/ITCH_PAGE.md), including **AI Tools Used** and **Flavor Cards**.
 5. Play the uploaded build on the itch.io page once. Check the menu, movement, vacuum, sorting, keepsakes, upgrades, restart, audio toggle, and fullscreen.
 6. Submit the itch.io project to the jam. Check the live jam page for the deadline and join the organizers' Discord if claiming prize eligibility.
@@ -118,7 +118,7 @@ All room art is drawn directly in Canvas using geometric shapes and a consistent
 
 ## 🧪 Validation
 
-The automated suite checks reachable collectibles, bag capacity, quiet-mode noise reduction, sleep recovery, correct and incorrect sorting, upgrade costs, complete victory requirements, both defeat conditions, restart, and paused clocks. Movement and vacuum collection were also checked in a desktop browser. The itch.io embedded build must still be tested after upload.
+The **14 automated tests** check reachable collectibles, bag capacity, quiet-mode noise reduction, sleep recovery, sorting, upgrades, victory and defeat, restart, paused clocks, menu fitting, and a complete interaction flow. Browser QA covers **eight viewport sizes**, native fullscreen, and **four iframe player sizes** with fullscreen denied. Movement, collection, keepsake reading, sorting by mouse and keyboard, pause, and restart were checked in the embedded player. See [the QA report](docs/QA.md). The actual itch.io upload still needs its final host-page check.
 
 ## 🗂️ Inside the little machine
 

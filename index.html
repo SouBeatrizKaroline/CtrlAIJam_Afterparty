@@ -15,9 +15,9 @@
     <div><small>LOST & FOUND</small><strong id="found-count">0 / 4</strong><span id="bag-count">Bag 0 / 12 · Scrap 0</span></div>
     <div><small>BEFORE SUNRISE</small><strong id="timer">6:00</strong><span id="mode-label">Ready for your shift</span></div>
   </section>
-  <div class="stage"><canvas id="room" width="1040" height="650" tabindex="0" aria-label="Top-down party room. Use WASD or arrow keys to move, Space to vacuum, Shift for quiet mode, E to interact."></canvas>
+  <div class="stage" id="stage"><canvas id="room" width="1040" height="650" tabindex="0" aria-label="Top-down party room. Use WASD or arrow keys to move, Space to vacuum, Shift for quiet mode, E to interact."></canvas>
     <div id="toast" role="status" aria-live="polite"></div><div id="prompt"></div>
-    <section id="overlay" class="overlay"><div class="card" id="panel"></div></section>
+    <section id="overlay" class="overlay" role="dialog" aria-modal="true" aria-label="Game menu"><div class="card" id="panel"></div></section>
   </div>
   <footer><span><kbd>WASD</kbd> / <kbd>↑↓←→</kbd> Move</span><span><kbd>SPACE</kbd> Vacuum</span><span><kbd>SHIFT</kbd> Quiet mode</span><span><kbd>E</kbd> Interact</span><span><kbd>ESC</kbd> Pause</span></footer>
   <div id="touch" aria-label="Touch controls"><div class="dpad"><button data-key="ArrowUp" aria-label="Move up">↑</button><button data-key="ArrowLeft" aria-label="Move left">←</button><button data-key="ArrowDown" aria-label="Move down">↓</button><button data-key="ArrowRight" aria-label="Move right">→</button></div><div><button data-key="Space">Vacuum</button><button id="quiet-touch">Quiet: off</button><button id="interact-touch">Interact</button></div></div>

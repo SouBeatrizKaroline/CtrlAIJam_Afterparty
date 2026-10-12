@@ -27,6 +27,8 @@ The creator requested English text, a repository named `CtrlAIJam_Afterparty`, a
 
 ## Submission check still needed
 
+Version **1.0.1** replaces the initial page layout with a single viewport that never scrolls, fits all menu cards, preserves the complete room's aspect ratio, and keeps the timer visible. Additional QA fixes and browser evidence are documented in [QA.md](QA.md).
+
 Upload the packaged ZIP to itch.io and play the actual embedded build once. Verify fullscreen permissions and the embed dimensions there; a local browser check cannot establish the host page's settings. This repository's publication does not submit an itch.io entry.
 
 ## AI disclosure

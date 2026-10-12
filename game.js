@@ -38,10 +38,21 @@ function tone(freq=500,duration=.07,volume=.025,type='sine'){
 function initAudio(){try {audio??=new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume().catch(()=>{});}catch{/* Audio is optional. */}}
 function toast(text){$('toast').textContent=text;$('toast').classList.add('visible');state.toast=3;}
 function burst(x,y,color,n=8){for(let i=0;i<n;i++)particles.push({x,y,vx:(Math.random()-.5)*95,vy:(Math.random()-.5)*95,life:.5,color});}
-function show(html,newMode){mode=newMode;keys.clear();$('panel').innerHTML=html;$('overlay').classList.remove('hidden');$('prompt').textContent='';$('pause').textContent='Pause';}
+function fitPanel(){
+  const stage=$('stage'),panel=$('panel');
+  if(!stage.clientWidth||!panel.offsetWidth||!panel.offsetHeight)return;
+  const scale=Math.max(.01,Math.min(1,(stage.clientWidth-24)/panel.offsetWidth,(stage.clientHeight-24)/panel.offsetHeight));
+  panel.style.transform=`scale(${scale})`;
+}
+function show(html,newMode){
+  mode=newMode;keys.clear();state.moving=false;state.vacuum=false;
+  $('panel').innerHTML=html;$('overlay').classList.remove('hidden');
+  $('toast').classList.remove('visible');$('prompt').textContent='';$('pause').textContent='Pause';
+  fitPanel();$('panel').querySelector?.('button:not(:disabled)')?.focus({preventScroll:true});
+}
 function resume(){mode='play';$('overlay').classList.add('hidden');keys.clear();canvas.focus({preventScroll:true});}
 function start(){state=freshState();particles=[];quietTouch=false;$('quiet-touch').textContent='Quiet: off';initAudio();resume();if(!document.fullscreenElement&&document.fullscreenEnabled&&$('game').requestFullscreen)$('game').requestFullscreen().catch(()=>toast('Use the fullscreen button on the itch.io player for a bigger view.'));toast('Morning shift online. Hold SPACE to vacuum leftovers.');}
-function title(){show(`<div class="eyebrow">ONE ROOM. ONE LAST KINDNESS.</div><h1>The party is over.<br>Your shift is not.</h1><p>You are MOP-01, a tiny cleaning robot with a big heart. Your human fell asleep after their leaving party. Make the room feel like home one last time.</p><div class="steps"><div><b>01 / Tidy up.</b> Hold SPACE to vacuum crumbs, cups, and paper.</div><div><b>02 / Make something of it.</b> Bring your bag to the dock, sort it, and buy upgrades.</div><div><b>03 / Leave a little love.</b> Find four keepsakes. Take them to the Lost & Found shelf.</div><div><b>Shhh.</b> Hold SHIFT for quiet cleaning near the sofa. Let go of SPACE to let the noise settle.</div></div><div class="buttons"><button class="primary" id="start">Clock in →</button></div><p class="hint">WASD / arrows to move · E to interact · 6 minutes until sunrise<br>Original HTML5 game · LEFTOVERS · Don't Wake It</p>`,'title');$('start').onclick=start;}
+function title(){state=freshState();particles=[];quietTouch=false;show(`<div class="eyebrow">ONE ROOM. ONE LAST KINDNESS.</div><h1>The party is over.<br>Your shift is not.</h1><p>You are MOP-01, a tiny cleaning robot with a big heart. Your human fell asleep after their leaving party. Make the room feel like home one last time.</p><div class="steps"><div><b>01 / Tidy up.</b> Hold SPACE to vacuum crumbs, cups, and paper.</div><div><b>02 / Make something of it.</b> Bring your bag to the dock, sort it, and buy upgrades.</div><div><b>03 / Leave a little love.</b> Find four keepsakes. Take them to the Lost & Found shelf.</div><div><b>Shhh.</b> Hold SHIFT for quiet cleaning near the sofa. Let go of SPACE to let the noise settle.</div></div><div class="buttons"><button class="primary" id="start">Clock in →</button></div><p class="hint">WASD / arrows to move · E to interact · 6 minutes until sunrise<br>Original HTML5 game · LEFTOVERS · Don't Wake It</p>`,'title');$('start').onclick=start;}
 function pause(){if(mode==='play'){show(`<div class="eyebrow">TAKE A BREATHER</div><h2>Even robots need a break.</h2><p>The clock and the room are paused. Clean all 72 leftovers, empty your bag, and return all four keepsakes to the shelf.</p><div class="buttons"><button class="primary" id="resume">Back to work</button><button id="restart">Start over</button></div>`,'pause');$('resume').onclick=resume;$('restart').onclick=start;}else if(mode==='pause')resume();}
 function nearestStory(){return stories.find((s,i)=>!state.found.includes(i)&&Math.hypot(state.x-s.x,state.y-s.y)<49);}
 function atDock(){return Math.hypot(state.x-165,state.y-563)<96;}
@@ -60,7 +71,7 @@ function dock(){
   $('u-silent').onclick=()=>upgrade('silencer',true,15);
   $('u-bag').onclick=()=>upgrade('capacity',24,10);
 }
-function upgrade(key,value,cost){if(state.scrap<cost)return;state.scrap-=cost;state[key]=value;tone(880,.12);dock();hud();}
+function upgrade(key,value,cost){if(mode!=='dock'||state.scrap<cost||state[key]===value)return;state.scrap-=cost;state[key]=value;tone(880,.12);dock();hud();}
 function sorting(){
   if(!state.bag.length){toast('Bag empty. Every leftover gets another chance.');dock();return;}
   const item=state.bag[0],names=['Food crumbs','Plastic cup','Paper napkin'],icons=['●','▱','▧'];
@@ -76,7 +87,7 @@ function hud(){
   $('progress').textContent=Math.round(state.cleaned/TOTAL*100)+'%';$('clean-count').textContent=`${state.cleaned} / ${TOTAL} leftovers`;
   $('noise').style.width=state.noise+'%';$('noise').style.background=state.noise>75?'#ed927f':state.noise>40?'#eed089':'#b9eb9c';
   $('sleep-label').textContent=state.noise>75?'About to wake!':state.noise>40?'Tossing & turning':'Deep sleep';
-  $('found-count').textContent=`${state.returned?.length||0} / 4`;
+  $('found-count').textContent=`${state.found.length} found · ${state.returned?.length||0} safe`;
   $('bag-count').textContent=`Bag ${state.bag.length} / ${state.capacity} · Scrap ${state.scrap}`;
   $('timer').textContent=`${Math.floor(state.time/60)}:${String(Math.floor(state.time%60)).padStart(2,'0')}`;
   $('mode-label').textContent=state.quiet?'Quiet mode · shhh':state.bag.length===state.capacity?'Bag full · visit dock':mode==='play'?'Cleaning shift':'Shift on hold';
@@ -171,7 +182,11 @@ function draw(t,dt){
 }
 function frame(now){const dt=Math.min((now-lastTime)/1000,.05);lastTime=now;if(mode==='play')update(dt);hud();draw(now/1000,dt);requestAnimationFrame(frame);}
 document.addEventListener('keydown',e=>{
-  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','Escape','Tab'].includes(e.code)&&e.code!=='Tab')e.preventDefault();
+  if(e.code==='Tab'&&mode!=='play'){
+    const buttons=[...($('panel').querySelectorAll?.('button:not(:disabled)')||[])];
+    if(buttons.length){e.preventDefault();const index=buttons.indexOf(document.activeElement);buttons[(index+(e.shiftKey?-1:1)+buttons.length)%buttons.length].focus({preventScroll:true});}return;
+  }
+  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Escape'].includes(e.code)||(e.code==='Space'&&mode==='play'))e.preventDefault();
   if(e.repeat)return;
   if(e.code==='Escape'){if(mode==='play'||mode==='pause')pause();else if(['dock','sort','story'].includes(mode))resume();return;}
   if(mode==='sort'&&['Digit1','Digit2','Digit3'].includes(e.code)){sortItem(Number(e.code.at(-1))-1);return;}
@@ -180,10 +195,12 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('keyup',e=>keys.delete(e.code));
 window.addEventListener('blur',()=>{keys.clear();if(mode==='play')pause();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&mode==='play')pause();});
-document.addEventListener('fullscreenchange',()=>{$('fullscreen').textContent=document.fullscreenElement?'Exit fullscreen':'Fullscreen';});
+window.addEventListener('resize',fitPanel);
+if(typeof ResizeObserver!=='undefined')new ResizeObserver(fitPanel).observe($('stage'));
+document.addEventListener('fullscreenchange',()=>{keys.clear();fitPanel();$('fullscreen').textContent=document.fullscreenElement?'Exit fullscreen':'Fullscreen';if(mode==='play')canvas.focus({preventScroll:true});});
 $('pause').onclick=pause;
-$('sound').onclick=()=>{muted=!muted;$('sound').textContent=`Sound: ${muted?'off':'on'}`;if(!muted)initAudio();};
-$('fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('game').requestFullscreen();}catch{toast('Fullscreen is unavailable here. Enable it in the itch.io embed settings.');}};
+$('sound').onclick=()=>{muted=!muted;$('sound').textContent=`Sound: ${muted?'off':'on'}`;if(!muted)initAudio();if(mode==='play')canvas.focus({preventScroll:true});};
+$('fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('game').requestFullscreen();}catch{toast('Use the itch.io player fullscreen button. The room still fits this window.');}finally{fitPanel();if(mode==='play')canvas.focus({preventScroll:true});}};
 document.querySelectorAll('[data-key]').forEach(b=>{const release=()=>keys.delete(b.dataset.key);b.onpointerdown=e=>{e.preventDefault();if(mode!=='play')return;initAudio();keys.add(b.dataset.key);b.setPointerCapture(e.pointerId);};b.onpointerup=release;b.onpointercancel=release;b.onlostpointercapture=release;});
 $('quiet-touch').onclick=()=>{quietTouch=!quietTouch;$('quiet-touch').textContent=`Quiet: ${quietTouch?'on':'off'}`;};$('interact-touch').onclick=interact;
 title();requestAnimationFrame(frame);
